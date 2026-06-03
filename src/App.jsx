@@ -157,27 +157,6 @@ export function App() {
 
   return (
     <div className="app-shell">
-      <header className="hero">
-        <div className="clock-panel">
-          <p>{formatDateTime(now)}</p>
-          <strong>{formatClock(now)}</strong>
-        </div>
-
-        <div className="hero-copy">
-          <p className="logo">DevQuest Live Display</p>
-          <h1>Tableau des quetes</h1>
-          <p className="subtitle">Ici, pas de dragon a debugger : juste des talks epiques a enchainer.</p>
-          <p className="rotation-hint">
-            Rotation auto: {GLOBAL_VIEW_MS / 1000}s global, {ROOM_VIEW_MS / 1000}s par salle, {SPONSOR_VIEW_MS / 1000}s sponsors
-          </p>
-          {mockConfig ? (
-            <p className="simulation-badge">
-              Mode simulation actif ({mockConfig.type === "offset" ? "mockNow" : "date fixe"})
-            </p>
-          ) : null}
-        </div>
-      </header>
-
       {state.error && <div className="error-banner">{state.error}</div>}
 
       {state.loading && state.events.length === 0 ? (
@@ -189,73 +168,62 @@ export function App() {
       ) : null}
 
       {!state.loading || state.events.length > 0 ? (
-        <>
-          {(activeType === "global" || activeType === "room") ? (
-            <>
-              <main className="schedule-grid">
-                {ROOM_ORDER.map((room) => {
-                  const col = roomColumns.find((c) => c.room === room) || { room, current: null, next: null };
-                  const isZoomed = activeType === "room" && rotationView.room === room;
-                  return <RoomColumn key={room} column={col} className={isZoomed ? "column--zoomed" : ""} />;
-                })}
-              </main>
-              <div className="sponsor-strip">
-                {SPONSORS.map((sponsor) => (
-                  <img key={sponsor.name} src={sponsor.image} alt={sponsor.name} />
-                ))}
-              </div>
-            </>
-          ) : null}
-
-          {activeType === "sponsors" ? (
-            <main className="sponsor-view">
-              <section className="sponsor-board">
-                <h2>Les sponsors de la quete</h2>
-                <p>Merci aux guildes qui soutiennent l'aventure DevQuest.</p>
-                <div className="sponsor-grid">
-                  {["LEGENDAIRE", "EPIQUE", "RARE", "COMMUN"].map((level) => {
-                    const group = SPONSORS.filter((s) => s.level === level);
-                    if (!group.length) return null;
-                    return (
-                      <div key={level} className={`sponsor-row sponsor-row--${level.toLowerCase()}`}>
-                        <span className={`sponsor-level-label sponsor-level-label--${level.toLowerCase()}`}>{level}</span>
-                        <div className="sponsor-row-logos">
-                          {group.map((sponsor) => (
-                            <article key={sponsor.name} className={`sponsor-card sponsor-card--${level.toLowerCase()}`}>
-                              <img src={sponsor.image} alt={sponsor.name} />
-                            </article>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </section>
-            </main>
-          ) : null}
-        </>
+        <main className="schedule-grid">
+          {ROOM_ORDER.map((room) => {
+            const col = roomColumns.find((c) => c.room === room) || { room, current: null, next: null };
+            const isZoomed = activeType === "room" && rotationView.room === room;
+            return (
+              <RoomColumn key={room} column={col} className={isZoomed ? "column--zoomed" : ""} />
+            );
+          })}
+        </main>
       ) : null}
 
-      <footer className="footer">
-        <nav className="view-nav">
-          <button className={`view-nav-btn${manualView === null ? " active" : ""}`} onClick={() => setManualView(null)}>
-            Auto
-          </button>
-          <button className={`view-nav-btn${activeType === "global" ? " active" : ""}`} onClick={() => setManualView("global")}>
-            Vue globale
-          </button>
-          <button className={`view-nav-btn${activeType === "room" ? " active" : ""}`} onClick={() => setManualView("room")}>
-            Vue par salle
-          </button>
-          <button className={`view-nav-btn${activeType === "sponsors" ? " active" : ""}`} onClick={() => setManualView("sponsors")}>
-            Vue sponsors
-          </button>
-        </nav>
-        <div className="footer-meta">
-          <span>Source donnees: devquest.fr/export-2026 + schedule/day-1, day-2</span>
-          <span>Derniere synchro: {state.updatedAt ? new Date(state.updatedAt).toLocaleTimeString("fr-FR") : "-"}</span>
+      <div className={`sponsor-panel${activeType === "sponsors" ? " sponsor-panel--expanded" : ""}`}>
+        <div className="sponsor-panel__board">
+          <h2>Les sponsors de la quete</h2>
+          <p>Merci aux guildes qui soutiennent l'aventure DevQuest.</p>
+          <div className="sponsor-grid">
+            {["LEGENDAIRE", "EPIQUE", "RARE", "COMMUN"].map((level) => {
+              const group = SPONSORS.filter((s) => s.level === level);
+              if (!group.length) return null;
+              return (
+                <div key={level} className={`sponsor-row sponsor-row--${level.toLowerCase()}`}>
+                  <span className={`sponsor-level-label sponsor-level-label--${level.toLowerCase()}`}>{level}</span>
+                  <div className="sponsor-row-logos">
+                    {group.map((sponsor) => (
+                      <article key={sponsor.name} className={`sponsor-card sponsor-card--${level.toLowerCase()}`}>
+                        <img src={sponsor.image} alt={sponsor.name} />
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </footer>
+        <div className="sponsor-panel__strip">
+          <div className="sponsor-strip-clock">
+            <span className="sponsor-strip-clock__time">{formatClock(now)}</span>
+            <span className="sponsor-strip-clock__date">{formatDateTime(now)}</span>
+          </div>
+          <div className="sponsor-strip-logos">
+            {SPONSORS.map((sponsor) => (
+              <img key={sponsor.name} src={sponsor.image} alt={sponsor.name} />
+            ))}
+          </div>
+          <select
+            className="view-select"
+            value={manualView ?? "auto"}
+            onChange={(e) => setManualView(e.target.value === "auto" ? null : e.target.value)}
+          >
+            <option value="auto">Auto</option>
+            <option value="global">Globale</option>
+            <option value="room">Par salle</option>
+            <option value="sponsors">Sponsors</option>
+          </select>
+        </div>
+      </div>
     </div>
   );
 }

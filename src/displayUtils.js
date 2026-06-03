@@ -1,5 +1,5 @@
 export const ROOM_ORDER = ["Forge", "Observatoire", "Laboratoire", "Beffroi"];
-export const GLOBAL_VIEW_MS = 20 * 1000;
+export const GLOBAL_VIEW_MS = 5 * 1000;
 export const ROOM_VIEW_MS = 6 * 1000;
 export const SPONSOR_VIEW_MS = 5 * 1000;
 
