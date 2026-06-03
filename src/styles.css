@@ -66,6 +66,12 @@ body {
   color: var(--muted);
 }
 
+.rotation-hint {
+  margin: 0.45rem 0 0;
+  color: #ffd9cb;
+  font-size: 0.85rem;
+}
+
 .simulation-badge {
   margin: 0.75rem 0 0;
   display: inline-block;
@@ -104,6 +110,64 @@ body {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.room-focus-grid {
+  flex: 1;
+  display: grid;
+  align-items: stretch;
+}
+
+.column-focus {
+  max-width: 980px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.sponsor-view {
+  flex: 1;
+  display: grid;
+  align-items: center;
+}
+
+.sponsor-board {
+  border: 1px solid #7f2b2b;
+  border-radius: 1rem;
+  padding: 1.2rem;
+  background: linear-gradient(180deg, rgba(58, 17, 20, 0.95), rgba(42, 13, 14, 0.95));
+}
+
+.sponsor-board h2 {
+  margin: 0;
+  font-family: Cinzel, serif;
+}
+
+.sponsor-board p {
+  margin: 0.5rem 0 1rem;
+  color: var(--muted);
+}
+
+.sponsor-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sponsor-card {
+  border: 1px solid #9f3d3d;
+  border-radius: 0.75rem;
+  padding: 0.8rem;
+  background: rgba(23, 8, 8, 0.45);
+}
+
+.sponsor-card h3 {
+  margin: 0;
+  color: #ffd27c;
+}
+
+.sponsor-card p {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+}
+
 .column {
   border: 1px solid #7f2b2b;
   background: linear-gradient(180deg, var(--panel-strong), var(--panel));
@@ -124,7 +188,7 @@ body {
   z-index: -1;
   background-image:
     linear-gradient(180deg, rgba(23, 8, 8, 0.2), rgba(42, 13, 14, 0.6)),
-    var(--room-background);
+    var(--room-background, none);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -230,6 +294,10 @@ body {
 @media (max-width: 980px) {
   .schedule-grid {
     grid-template-columns: 1fr;
+  }
+
+  .sponsor-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
   .hero {

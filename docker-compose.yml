@@ -1,0 +1,14 @@
+services:
+  devquest-display:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: devquest-display:latest
+    container_name: devquest-display
+    ports:
+      - "8420:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+    restart: unless-stopped
+

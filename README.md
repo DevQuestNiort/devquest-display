@@ -7,6 +7,7 @@ Application web Node.js + React pour afficher sur grand ecran les talks en cours
 - Lecture des donnees depuis `https://www.devquest.fr/export-2026`
 - Recuperation des horaires depuis les pages `schedule/day-1` et `schedule/day-2`
 - Affichage live des talks en cours et de la session juste apres, par salle
+- Rotation automatique des vues (globale, focus salle, sponsors)
 - Rechargement auto des donnees cote serveur
 - Theme visuel inspire de l'univers DevQuest (fantasy + neon)
 
@@ -50,6 +51,10 @@ http://localhost:5173/?mockNow=-2h30m
 - L'heure et la date s'affichent en haut a gauche.
 - Le programme affiche 4 colonnes, une par salle.
 - Chaque colonne montre la session actuelle et la session juste apres.
+- Carousel automatique:
+  - 20 secondes sur la vue globale
+  - 8 secondes par salle (vue focus, une colonne)
+  - 5 secondes sur la vue sponsors (donnees mock)
 
 ## Build production
 
@@ -59,6 +64,22 @@ npm start
 ```
 
 L'application React est servie par Express depuis `dist/`.
+
+## Lancer avec Docker Compose
+
+```bash
+docker compose up --build -d
+```
+
+Application disponible sur:
+
+- `http://localhost:8420`
+
+Arreter:
+
+```bash
+docker compose down
+```
 
 ## Tests
 

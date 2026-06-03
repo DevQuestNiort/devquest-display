@@ -1,4 +1,7 @@
 export const ROOM_ORDER = ["Forge", "Observatoire", "Laboratoire", "Beffroi"];
+export const GLOBAL_VIEW_MS = 20 * 1000;
+export const ROOM_VIEW_MS = 8 * 1000;
+export const SPONSOR_VIEW_MS = 5 * 1000;
 
 function normalizeValue(value) {
   return String(value || "")
@@ -114,5 +117,31 @@ export function groupSessionsByRoom(events, now, roomOrder = ROOM_ORDER) {
 
       return { room, current, next };
     });
+}
+
+export function getRotationView(
+  elapsedMs,
+  roomNames = ROOM_ORDER,
+  {
+    globalMs = GLOBAL_VIEW_MS,
+    roomMs = ROOM_VIEW_MS,
+    sponsorMs = SPONSOR_VIEW_MS
+  } = {}
+) {
+  const rooms = roomNames.length > 0 ? roomNames : ROOM_ORDER;
+  const cycleMs = globalMs + rooms.length * roomMs + sponsorMs;
+  let cursor = Math.max(0, elapsedMs) % cycleMs;
+
+  if (cursor < globalMs) {
+    return { type: "global" };
+  }
+
+  cursor -= globalMs;
+  const roomIndex = Math.floor(cursor / roomMs);
+  if (roomIndex < rooms.length) {
+    return { type: "room", room: rooms[roomIndex], roomIndex };
+  }
+
+  return { type: "sponsors" };
 }
 

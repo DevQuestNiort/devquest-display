@@ -1,6 +1,11 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { getDisplayNow, groupSessionsByRoom, parseMockNowParam } from "./displayUtils.js";
+import {
+  getDisplayNow,
+  getRotationView,
+  groupSessionsByRoom,
+  parseMockNowParam
+} from "./displayUtils.js";
 
 test("parseMockNowParam supporte un offset comme +7j2h", () => {
   const parsed = parseMockNowParam("+7j2h");
@@ -31,5 +36,20 @@ test("groupSessionsByRoom renvoie la session en cours et la suivante par salle",
   const forge = rooms.find((room) => room.room === "Forge");
   assert.equal(forge.current.title, "B");
   assert.equal(forge.next.title, "C");
+});
+
+test("getRotationView enchaine globale, salles puis sponsors", () => {
+  const rooms = ["Forge", "Observatoire", "Laboratoire", "Beffroi"];
+  const timings = { globalMs: 20000, roomMs: 8000, sponsorMs: 5000 };
+
+  assert.equal(getRotationView(0, rooms, timings).type, "global");
+  assert.deepEqual(getRotationView(20000, rooms, timings), { type: "room", room: "Forge", roomIndex: 0 });
+  assert.deepEqual(getRotationView(28000, rooms, timings), {
+    type: "room",
+    room: "Observatoire",
+    roomIndex: 1
+  });
+  assert.equal(getRotationView(52000, rooms, timings).type, "sponsors");
+  assert.equal(getRotationView(57000, rooms, timings).type, "global");
 });
 
