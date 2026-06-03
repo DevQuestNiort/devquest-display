@@ -146,27 +146,61 @@ body {
 }
 
 .sponsor-grid {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.sponsor-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sponsor-row-logos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
 }
 
 .sponsor-card {
-  border: 1px solid #9f3d3d;
+  border: none;
+  background: white;
   border-radius: 0.75rem;
-  padding: 0.8rem;
-  background: rgba(23, 8, 8, 0.45);
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.sponsor-card h3 {
-  margin: 0;
-  color: #ffd27c;
+.sponsor-card img {
+  object-fit: contain;
+  display: block;
 }
 
-.sponsor-card p {
-  margin: 0.35rem 0 0;
-  color: var(--muted);
+.sponsor-level-label {
+  font-family: Cinzel, serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 0.3rem 1rem;
+  border-radius: 0.4rem;
+  align-self: center;
+  white-space: nowrap;
 }
+
+.sponsor-level-label--legendaire { background: rgba(255, 210, 60, 0.15); border: 1px solid #ffd27c; color: #ffd27c; }
+.sponsor-level-label--epique     { background: rgba(180, 90, 255, 0.15); border: 1px solid #c47aff; color: #c47aff; }
+.sponsor-level-label--rare       { background: rgba(80, 160, 255, 0.15); border: 1px solid #6ab0ff; color: #6ab0ff; }
+.sponsor-level-label--commun     { background: rgba(160, 160, 160, 0.15); border: 1px solid #b0b0b0; color: #b0b0b0; }
+
+.sponsor-card--legendaire img { height: 200px; }
+.sponsor-card--epique img     { height: 125px; }
+.sponsor-card--rare img       { height: 100px; }
+.sponsor-card--commun img     { height: 75px; }
 
 .column {
   border: 1px solid #7f2b2b;
@@ -285,6 +319,41 @@ body {
 
 .footer {
   display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.view-nav {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.view-nav-btn {
+  background: rgba(23, 8, 8, 0.6);
+  border: 1px solid #7f2b2b;
+  border-radius: 0.5rem;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: Cinzel, serif;
+  font-size: 0.85rem;
+  padding: 0.35rem 1rem;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.view-nav-btn:hover {
+  border-color: #c0504d;
+  color: var(--text);
+}
+
+.view-nav-btn.active {
+  background: rgba(127, 43, 43, 0.5);
+  border-color: #ffd27c;
+  color: #ffd27c;
+}
+
+.footer-meta {
+  display: flex;
   justify-content: space-between;
   gap: 1rem;
   color: var(--muted);
@@ -294,10 +363,6 @@ body {
 @media (max-width: 980px) {
   .schedule-grid {
     grid-template-columns: 1fr;
-  }
-
-  .sponsor-grid {
-    grid-template-columns: 1fr 1fr;
   }
 
   .hero {

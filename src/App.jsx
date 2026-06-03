@@ -24,13 +24,23 @@ const ROOM_BACKGROUNDS = {
   Laboratoire: laboratoireImage,
   Beffroi: beffroiImage
 };
-const MOCK_SPONSORS = [
-  { name: "Maif", tier: "Legendaire" },
-  { name: "Clever Cloud", tier: "Epique" },
-  { name: "SFEIR", tier: "Rare" },
-  { name: "Zenika", tier: "Commun" },
-  { name: "NeoSoft", tier: "Epique" },
-  { name: "Macif", tier: "Commun" }
+const SPONSORS = [
+  { name: "Maif", image: "https://www.devquest.fr/partenaires/maif.webp", level: "LEGENDAIRE" },
+  { name: "Altapyx", image: "https://www.devquest.fr/partenaires/altapyx.webp", level: "EPIQUE" },
+  { name: "Clever Cloud SAS", image: "https://www.devquest.fr/partenaires/clever-cloud.png", level: "EPIQUE" },
+  { name: "Catamania", image: "https://www.devquest.fr/partenaires/catamania.png", level: "EPIQUE" },
+  { name: "NeoSoft", image: "https://www.devquest.fr/partenaires/neosoft.webp", level: "EPIQUE" },
+  { name: "Alltech Consulting", image: "https://www.devquest.fr/partenaires/alltech.webp", level: "EPIQUE" },
+  { name: "IMA", image: "https://www.devquest.fr/partenaires/ima.webp", level: "EPIQUE" },
+  { name: "Wekey", image: "https://www.devquest.fr/partenaires/wekey.webp", level: "RARE" },
+  { name: "SFEIR", image: "https://www.devquest.fr/partenaires/SFEIR.webp", level: "RARE" },
+  { name: "Serli", image: "https://www.devquest.fr/partenaires/serli.webp", level: "RARE" },
+  { name: "SII", image: "https://www.devquest.fr/partenaires/sii.webp", level: "RARE" },
+  { name: "Darva", image: "https://www.devquest.fr/partenaires/darva.webp", level: "COMMUN" },
+  { name: "Zenika", image: "https://www.devquest.fr/partenaires/zenika.webp", level: "COMMUN" },
+  { name: "Macif", image: "https://www.devquest.fr/partenaires/macif.webp", level: "COMMUN" },
+  { name: "Socram Banque", image: "https://www.devquest.fr/partenaires/socram.webp", level: "COMMUN" },
+  { name: "SPI Informatique", image: "https://www.devquest.fr/partenaires/spi-informatique.jpg", level: "COMMUN" }
 ];
 
 function getMockConfigFromUrl() {
@@ -115,6 +125,7 @@ export function App() {
     updatedAt: ""
   });
   const [now, setNow] = useState(() => getDisplayNow(mockConfig));
+  const [manualView, setManualView] = useState(null);
 
   useEffect(() => {
     loadSchedule(setState);
@@ -142,6 +153,7 @@ export function App() {
     () => roomColumns.find((column) => column.room === rotationView.room) || { room: rotationView.room, current: null, next: null },
     [roomColumns, rotationView.room]
   );
+  const activeType = manualView ?? rotationView.type;
 
   return (
     <div className="app-shell">
@@ -178,7 +190,7 @@ export function App() {
 
       {!state.loading || state.events.length > 0 ? (
         <>
-          {rotationView.type === "global" ? (
+          {activeType === "global" ? (
             <main className="schedule-grid">
               {roomColumns.map((column) => (
                 <RoomColumn key={column.room} column={column} />
@@ -186,24 +198,34 @@ export function App() {
             </main>
           ) : null}
 
-          {rotationView.type === "room" ? (
+          {activeType === "room" ? (
             <main className="room-focus-grid">
               <RoomColumn column={focusedColumn} className="column-focus" />
             </main>
           ) : null}
 
-          {rotationView.type === "sponsors" ? (
+          {activeType === "sponsors" ? (
             <main className="sponsor-view">
               <section className="sponsor-board">
                 <h2>Les sponsors de la quete</h2>
                 <p>Merci aux guildes qui soutiennent l'aventure DevQuest.</p>
                 <div className="sponsor-grid">
-                  {MOCK_SPONSORS.map((sponsor) => (
-                    <article key={sponsor.name} className="sponsor-card">
-                      <h3>{sponsor.name}</h3>
-                      <p>{sponsor.tier}</p>
-                    </article>
-                  ))}
+                  {["LEGENDAIRE", "EPIQUE", "RARE", "COMMUN"].map((level) => {
+                    const group = SPONSORS.filter((s) => s.level === level);
+                    if (!group.length) return null;
+                    return (
+                      <div key={level} className={`sponsor-row sponsor-row--${level.toLowerCase()}`}>
+                        <span className={`sponsor-level-label sponsor-level-label--${level.toLowerCase()}`}>{level}</span>
+                        <div className="sponsor-row-logos">
+                          {group.map((sponsor) => (
+                            <article key={sponsor.name} className={`sponsor-card sponsor-card--${level.toLowerCase()}`}>
+                              <img src={sponsor.image} alt={sponsor.name} />
+                            </article>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
             </main>
@@ -212,10 +234,24 @@ export function App() {
       ) : null}
 
       <footer className="footer">
-        <span>Source donnees: devquest.fr/export-2026 + schedule/day-1, day-2</span>
-        <span>
-          Derniere synchro: {state.updatedAt ? new Date(state.updatedAt).toLocaleTimeString("fr-FR") : "-"}
-        </span>
+        <nav className="view-nav">
+          <button className={`view-nav-btn${manualView === null ? " active" : ""}`} onClick={() => setManualView(null)}>
+            Auto
+          </button>
+          <button className={`view-nav-btn${activeType === "global" ? " active" : ""}`} onClick={() => setManualView("global")}>
+            Vue globale
+          </button>
+          <button className={`view-nav-btn${activeType === "room" ? " active" : ""}`} onClick={() => setManualView("room")}>
+            Vue par salle
+          </button>
+          <button className={`view-nav-btn${activeType === "sponsors" ? " active" : ""}`} onClick={() => setManualView("sponsors")}>
+            Vue sponsors
+          </button>
+        </nav>
+        <div className="footer-meta">
+          <span>Source donnees: devquest.fr/export-2026 + schedule/day-1, day-2</span>
+          <span>Derniere synchro: {state.updatedAt ? new Date(state.updatedAt).toLocaleTimeString("fr-FR") : "-"}</span>
+        </div>
       </footer>
     </div>
   );
