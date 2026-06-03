@@ -190,18 +190,21 @@ export function App() {
 
       {!state.loading || state.events.length > 0 ? (
         <>
-          {activeType === "global" ? (
-            <main className="schedule-grid">
-              {roomColumns.map((column) => (
-                <RoomColumn key={column.room} column={column} />
-              ))}
-            </main>
-          ) : null}
-
-          {activeType === "room" ? (
-            <main className="room-focus-grid">
-              <RoomColumn column={focusedColumn} className="column-focus" />
-            </main>
+          {(activeType === "global" || activeType === "room") ? (
+            <>
+              <main className="schedule-grid">
+                {ROOM_ORDER.map((room) => {
+                  const col = roomColumns.find((c) => c.room === room) || { room, current: null, next: null };
+                  const isZoomed = activeType === "room" && rotationView.room === room;
+                  return <RoomColumn key={room} column={col} className={isZoomed ? "column--zoomed" : ""} />;
+                })}
+              </main>
+              <div className="sponsor-strip">
+                {SPONSORS.map((sponsor) => (
+                  <img key={sponsor.name} src={sponsor.image} alt={sponsor.name} />
+                ))}
+              </div>
+            </>
           ) : null}
 
           {activeType === "sponsors" ? (

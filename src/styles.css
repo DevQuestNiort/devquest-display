@@ -105,21 +105,31 @@ body {
 
 .schedule-grid {
   flex: 1;
-  display: grid;
+  display: flex;
   gap: 1rem;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.room-focus-grid {
-  flex: 1;
-  display: grid;
   align-items: stretch;
 }
 
-.column-focus {
-  max-width: 980px;
-  width: 100%;
-  margin: 0 auto;
+.sponsor-strip {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1rem;
+  background: rgba(23, 8, 8, 0.4);
+  border: 1px solid #7f2b2b;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.sponsor-strip img {
+  height: 40px;
+  object-fit: contain;
+  background: white;
+  border-radius: 0.4rem;
+  padding: 0.15rem 0.4rem;
+  flex-shrink: 0;
 }
 
 .sponsor-view {
@@ -203,6 +213,8 @@ body {
 .sponsor-card--commun img     { height: 75px; }
 
 .column {
+  flex: 1;
+  min-width: 0;
   border: 1px solid #7f2b2b;
   background: linear-gradient(180deg, var(--panel-strong), var(--panel));
   border-radius: 1rem;
@@ -213,6 +225,19 @@ body {
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  transition: flex 0.7s ease, font-size 0.7s ease, border-color 0.6s ease, box-shadow 0.6s ease;
+}
+
+.column--zoomed {
+  flex: 4;
+  font-size: 1.5rem;
+  border-color: rgba(255, 210, 124, 0.55);
+  box-shadow: 0 0 32px rgba(255, 143, 63, 0.18);
+}
+
+.column--zoomed h2 {
+  border-color: rgba(255, 210, 124, 0.7);
+  background: rgba(80, 20, 20, 0.85);
 }
 
 .column::before {
@@ -273,6 +298,13 @@ body {
   border-radius: 0.75rem;
   padding: 0.8rem;
   background: rgba(7, 1, 14, 0.55);
+  transition: transform 0.7s ease, box-shadow 0.7s ease, border-left-color 0.7s ease;
+}
+
+.column--zoomed .talk-card {
+  transform: scale(1.025);
+  box-shadow: 0 4px 22px rgba(255, 143, 63, 0.15);
+  border-left-color: #ffd27c;
 }
 
 .talk-card-compact {
