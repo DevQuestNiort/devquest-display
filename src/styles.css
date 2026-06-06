@@ -62,6 +62,11 @@ body {
   display: flex;
   gap: 1rem;
   align-items: stretch;
+  transition: opacity 0.4s ease;
+}
+
+.app-shell--sponsors .schedule-grid {
+  opacity: 0;
 }
 
 /* LITE: sponsor-panel — height animée remplacée par transform/opacity uniquement */
@@ -295,36 +300,6 @@ body {
   z-index: 1;
 }
 
-/* Poussière flottante — SVG data URI : points à positions libres, pas de grille */
-.column::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='300' fill='rgb(255,160,50)'%3E%3Ccircle cx='34' cy='45' r='1.5' opacity='.6'/%3E%3Ccircle cx='167' cy='12' r='1' opacity='.45'/%3E%3Ccircle cx='290' cy='89' r='1.8' opacity='.5'/%3E%3Ccircle cx='78' cy='178' r='1.2' opacity='.55'/%3E%3Ccircle cx='345' cy='234' r='1' opacity='.4'/%3E%3Ccircle cx='112' cy='267' r='1.5' opacity='.6'/%3E%3Ccircle cx='223' cy='134' r='1' opacity='.45'/%3E%3Ccircle cx='389' cy='67' r='1.2' opacity='.5'/%3E%3Ccircle cx='56' cy='134' r='1.8' opacity='.55'/%3E%3Ccircle cx='267' cy='289' r='1' opacity='.4'/%3E%3Ccircle cx='145' cy='56' r='1.2' opacity='.6'/%3E%3Ccircle cx='401' cy='178' r='1.5' opacity='.45'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='547' height='389' fill='rgb(255,215,100)'%3E%3Ccircle cx='45' cy='34' r='1.2' opacity='.4'/%3E%3Ccircle cx='189' cy='89' r='1.5' opacity='.35'/%3E%3Ccircle cx='312' cy='23' r='1' opacity='.45'/%3E%3Ccircle cx='78' cy='234' r='1.8' opacity='.35'/%3E%3Ccircle cx='456' cy='145' r='1' opacity='.4'/%3E%3Ccircle cx='134' cy='56' r='1.5' opacity='.35'/%3E%3Ccircle cx='390' cy='267' r='1.2' opacity='.45'/%3E%3Ccircle cx='23' cy='312' r='1' opacity='.35'/%3E%3Ccircle cx='267' cy='178' r='1.8' opacity='.4'/%3E%3Ccircle cx='523' cy='89' r='1.2' opacity='.35'/%3E%3Ccircle cx='167' cy='345' r='1' opacity='.45'/%3E%3Ccircle cx='345' cy='312' r='1.5' opacity='.35'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='383' height='503' fill='rgb(255,240,180)'%3E%3Ccircle cx='23' cy='67' r='.8' opacity='.35'/%3E%3Ccircle cx='156' cy='23' r='1.2' opacity='.3'/%3E%3Ccircle cx='289' cy='134' r='.8' opacity='.35'/%3E%3Ccircle cx='67' cy='245' r='1' opacity='.3'/%3E%3Ccircle cx='234' cy='389' r='.8' opacity='.35'/%3E%3Ccircle cx='112' cy='178' r='1.2' opacity='.3'/%3E%3Ccircle cx='312' cy='89' r='.8' opacity='.35'/%3E%3Ccircle cx='45' cy='445' r='1' opacity='.3'/%3E%3Ccircle cx='178' cy='312' r='.8' opacity='.35'/%3E%3Ccircle cx='356' cy='201' r='1.2' opacity='.3'/%3E%3Ccircle cx='89' cy='134' r='.8' opacity='.35'/%3E%3Ccircle cx='267' cy='467' r='1' opacity='.3'/%3E%3C/svg%3E");
-  background-size: 420px 300px, 547px 389px, 383px 503px;
-  background-position: 0px 0px, 50px 80px, 30px 150px;
-  will-change: background-position;
-  animation: dust-curved 50s linear infinite;
-}
-
-/* Courbes sinusoïdales : offset perpendiculaire calculé sur 5 étapes par layer */
-@keyframes dust-curved {
-  0%   { background-position:   0px    0px,   50px   80px,   30px  150px; }
-  20%  { background-position: 101px  -37px,  -79px   29px,  126px  236px; }
-  40%  { background-position: 178px -106px, -181px  -59px,  195px  342px; }
-  60%  { background-position: 242px -194px, -266px -170px,  248px  461px; }
-  80%  { background-position: 319px -263px, -368px -258px,  317px  567px; }
-  100% { background-position: 420px -300px, -497px -309px,  413px  653px; }
-}
-
-.app-shell--lite .column::after {
-  display: none;
-}
 
 .column h2 {
   margin: 0;
