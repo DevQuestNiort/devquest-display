@@ -25,7 +25,8 @@ body {
 }
 
 .app-shell {
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   padding: 1.5rem;
@@ -251,6 +252,7 @@ body {
 .schedule-grid--solo .column--zoomed {
   transition: opacity 0.25s ease;
   font-size: 1.5rem;
+  overflow-y: auto;
 }
 
 .schedule-grid--solo .column--zoomed h2 {
