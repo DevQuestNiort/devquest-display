@@ -169,7 +169,7 @@ export function App() {
       ) : null}
 
       {!state.loading || state.events.length > 0 ? (
-        <main className="schedule-grid">
+        <main className={`schedule-grid${activeType === "room" ? " schedule-grid--solo" : ""}`}>
           {ROOM_ORDER.map((room) => {
             const col = roomColumns.find((c) => c.room === room) || { room, current: null, next: null };
             const isZoomed = activeType === "room" && rotationView.room === room;
