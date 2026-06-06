@@ -157,7 +157,7 @@ export function App() {
   const activeType = manualView ?? rotationView.type;
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${lite ? " app-shell--lite" : ""}`}>
       {state.error && <div className="error-banner">{state.error}</div>}
 
       {state.loading && state.events.length === 0 ? (

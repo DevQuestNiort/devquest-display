@@ -295,6 +295,48 @@ body {
   z-index: 1;
 }
 
+/* Poussière flottante — 5 layers, directions indépendantes */
+.column::after {
+  content: "";
+  position: absolute;
+  inset: -100px;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(255, 200, 100, 0.50) 1px,   transparent 1px),
+    radial-gradient(circle, rgba(255, 140,  35, 0.30) 1.5px, transparent 1.5px),
+    radial-gradient(circle, rgba(255, 245, 160, 0.20) 0.7px, transparent 0.7px),
+    radial-gradient(circle, rgba(255,  90,  20, 0.30) 1.2px, transparent 1.2px),
+    radial-gradient(circle, rgba(255, 255, 200, 0.18) 0.8px, transparent 0.8px);
+  background-size: 137px 97px, 179px 113px, 83px 151px, 157px 89px, 61px 127px;
+  background-position: 0px 0px, 41px 67px, 19px 88px, 73px 33px, 5px 45px;
+  will-change: background-position;
+  animation: dust-multi 30s linear infinite;
+}
+
+@keyframes dust-multi {
+  from {
+    background-position:
+      0px    0px,
+      41px   67px,
+      19px   88px,
+      73px   33px,
+      5px    45px;
+  }
+  to {
+    background-position:
+      137px  -97px,
+     -138px  -46px,
+      102px  239px,
+      -84px  122px,
+       5px   -82px;
+  }
+}
+
+.app-shell--lite .column::after {
+  display: none;
+}
+
 .column h2 {
   margin: 0;
   display: inline-block;
