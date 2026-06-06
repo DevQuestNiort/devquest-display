@@ -11,6 +11,8 @@ import {
   ROOM_VIEW_MS,
   SPONSOR_VIEW_MS
 } from "./displayUtils";
+
+// Images de fond — désactivées en mode lite
 import forgeImage from "./img/forge.png";
 import observatoireImage from "./img/observatoire.png";
 import laboratoireImage from "./img/laboratoire.png";
@@ -44,23 +46,21 @@ const SPONSORS = [
 ];
 
 function getMockConfigFromUrl() {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
+  if (typeof window === "undefined") return null;
   const query = new URLSearchParams(window.location.search);
   return parseMockNowParam(query.get("mockNow"));
 }
 
+function isLiteMode() {
+  if (typeof window === "undefined") return false;
+  return new URLSearchParams(window.location.search).get("lite") === "true";
+}
+
 async function loadSchedule(setState) {
   setState((prev) => ({ ...prev, loading: true, error: "" }));
-
   try {
     const response = await fetch("/api/schedule");
-    if (!response.ok) {
-      throw new Error(`Erreur API: ${response.status}`);
-    }
-
+    if (!response.ok) throw new Error(`Erreur API: ${response.status}`);
     const payload = await response.json();
     setState({
       loading: false,
@@ -92,14 +92,16 @@ function TalkCard({ talk, compact = false }) {
   );
 }
 
-function getRoomBackgroundStyle(room) {
+function getRoomBackgroundStyle(room, lite) {
+  // LITE: pas d'image de fond — économise GPU et mémoire
+  if (lite) return undefined;
   const imageUrl = ROOM_BACKGROUNDS[room];
   return imageUrl ? { "--room-background": `url(${imageUrl})` } : undefined;
 }
 
-function RoomColumn({ column, className = "" }) {
+function RoomColumn({ column, className = "", lite = false }) {
   return (
-    <section className={`column ${className}`.trim()} style={getRoomBackgroundStyle(column.room)}>
+    <section className={`column ${className}`.trim()} style={getRoomBackgroundStyle(column.room, lite)}>
       <h2>{column.room}</h2>
 
       <div className="slot-group">
@@ -117,6 +119,7 @@ function RoomColumn({ column, className = "" }) {
 
 export function App() {
   const mockConfig = useMemo(() => getMockConfigFromUrl(), []);
+  const lite = useMemo(() => isLiteMode(), []);
   const carouselStartMs = useMemo(() => Date.now(), []);
   const [state, setState] = useState({
     loading: true,
@@ -129,10 +132,8 @@ export function App() {
 
   useEffect(() => {
     loadSchedule(setState);
-
     const refresh = setInterval(() => loadSchedule(setState), REFRESH_MS);
     const tick = setInterval(() => setNow(getDisplayNow(mockConfig)), TICK_MS);
-
     return () => {
       clearInterval(refresh);
       clearInterval(tick);
@@ -162,7 +163,7 @@ export function App() {
       {state.loading && state.events.length === 0 ? (
         <main className="schedule-grid">
           {roomColumns.map((column) => (
-            <RoomColumn key={column.room} column={column} />
+            <RoomColumn key={column.room} column={column} lite={lite} />
           ))}
         </main>
       ) : null}
@@ -173,7 +174,7 @@ export function App() {
             const col = roomColumns.find((c) => c.room === room) || { room, current: null, next: null };
             const isZoomed = activeType === "room" && rotationView.room === room;
             return (
-              <RoomColumn key={room} column={col} className={isZoomed ? "column--zoomed" : ""} />
+              <RoomColumn key={room} column={col} className={isZoomed ? "column--zoomed" : ""} lite={lite} />
             );
           })}
         </main>
@@ -227,4 +228,3 @@ export function App() {
     </div>
   );
 }
-
