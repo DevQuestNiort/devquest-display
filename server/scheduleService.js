@@ -40,7 +40,73 @@ function buildIso(date, hhmm) {
   return `${date}T${hhmm}:00+02:00`;
 }
 
-export function parseDayHtml(html, dayMeta, sessionIdByShort, exportedData) {
+function formatPseudoUtcTime(isoValue) {
+  const stamp = new Date(isoValue);
+  if (Number.isNaN(stamp.getTime())) {
+    return null;
+  }
+
+  const hh = String(stamp.getUTCHours()).padStart(2, "0");
+  const mm = String(stamp.getUTCMinutes()).padStart(2, "0");
+  return `${hh}:${mm}`;
+}
+
+function parseDayHtmlFromEmbeddedData(html, dayMeta, sessionIdByShort, exportedData) {
+  const dayId = dayMeta.path.split("/").pop();
+  const normalizedHtml = html.replace(/\\"/g, '"').replace(/\\\//g, "/");
+  const sessionRe =
+    /"id":"(cmm[a-z0-9]+)"[\s\S]*?"room":"([^"]+)"[\s\S]*?"day":"([^"]+)"[\s\S]*?"slot":\{"key":"([^"]+)"[\s\S]*?"start":"(\d{2}:\d{2})"[\s\S]*?"endISO":"([^"]+)"/g;
+
+  const slots = [];
+  const seen = new Set();
+
+  let match;
+  while ((match = sessionRe.exec(normalizedHtml)) !== null) {
+    const fullId = match[1];
+    const room = he.decode(match[2]).trim();
+    const eventDayId = match[3];
+    const eventId = match[4];
+    const startTime = match[5];
+    const endTime = formatPseudoUtcTime(match[6]) || addMinutes(startTime, 50);
+
+    if (dayId && eventDayId !== dayId) {
+      continue;
+    }
+
+    if (!room || !startTime || !endTime || seen.has(eventId)) {
+      continue;
+    }
+
+    seen.add(eventId);
+
+    const sidShort = shortId(fullId);
+    const sessionId = sessionIdByShort.get(sidShort) || fullId;
+    const session = exportedData.sessions[sessionId] || {};
+    const speakerNames = (session.speakers || []).map(
+      (speakerId) => exportedData.speakers[speakerId]?.name || "Intervenant"
+    );
+
+    slots.push({
+      eventId,
+      dayLabel: dayMeta.dayLabel,
+      date: dayMeta.date,
+      sessionId,
+      title: he.decode(session.title || "Session"),
+      room,
+      trackTitle: he.decode(session.trackTitle || room),
+      startTime,
+      endTime,
+      startIso: buildIso(dayMeta.date, startTime),
+      endIso: buildIso(dayMeta.date, endTime),
+      tags: session.tags || [],
+      speakerNames
+    });
+  }
+
+  return slots;
+}
+
+function parseDayHtmlLegacy(html, dayMeta, sessionIdByShort, exportedData) {
   const rowTimes = parseTimeRows(html);
   const slots = [];
   const slotRe =
@@ -61,12 +127,11 @@ export function parseDayHtml(html, dayMeta, sessionIdByShort, exportedData) {
 
     const session = exportedData.sessions[sessionId];
     const startTime = rowTimes.get(startRow);
-    if (!startTime) {
+    if (!session || !startTime) {
       continue;
     }
 
     const endTime = rowTimes.get(startRow + span) || addMinutes(startTime, 50);
-
     const speakerNames = (session.speakers || []).map(
       (speakerId) => exportedData.speakers[speakerId]?.name || "Intervenant"
     );
@@ -89,6 +154,21 @@ export function parseDayHtml(html, dayMeta, sessionIdByShort, exportedData) {
   }
 
   return slots;
+}
+
+export function parseDayHtml(html, dayMeta, sessionIdByShort, exportedData) {
+  const parsedFromEmbedded = parseDayHtmlFromEmbeddedData(
+    html,
+    dayMeta,
+    sessionIdByShort,
+    exportedData
+  );
+
+  if (parsedFromEmbedded.length > 0) {
+    return parsedFromEmbedded;
+  }
+
+  return parseDayHtmlLegacy(html, dayMeta, sessionIdByShort, exportedData);
 }
 
 async function fetchJson(url) {
