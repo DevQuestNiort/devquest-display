@@ -65,3 +65,18 @@ test("parseDayHtml extrait les sessions depuis le JSON embarque", () => {
   assert.deepEqual(out[0].speakerNames, ["Alice"]);
 });
 
+test("parseDayHtml garde les sessions JSON avec id non cmm", () => {
+  const html = `<script>self.__next_f.push([1,"{\"sessions\":[{\"id\":\"generatedbyvgo0001\",\"title\":\"Fatigues de la POO ? Passez a la DOP !\",\"room\":\"Observatoire\",\"day\":\"day-2\",\"slot\":{\"key\":\"day-2-session-4\",\"start\":\"10:00\"},\"startISO\":\"2026-06-12T10:00:00.000Z\",\"endISO\":\"2026-06-12T10:50:00.000Z\"}]}" ])</script>`;
+
+  const dayMeta = { path: "/schedule/day-2", date: "2026-06-12", dayLabel: "Jour 2" };
+  const byShort = new Map();
+  const exported = { sessions: {}, speakers: {} };
+
+  const out = parseDayHtml(html, dayMeta, byShort, exported);
+  assert.equal(out.length, 1);
+  assert.equal(out[0].sessionId, "generatedbyvgo0001");
+  assert.equal(out[0].eventId, "day-2-session-4");
+  assert.equal(out[0].title, "Fatigues de la POO ? Passez a la DOP !");
+  assert.equal(out[0].room, "Observatoire");
+});
+

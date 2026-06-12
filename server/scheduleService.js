@@ -55,7 +55,7 @@ function parseDayHtmlFromEmbeddedData(html, dayMeta, sessionIdByShort, exportedD
   const dayId = dayMeta.path.split("/").pop();
   const normalizedHtml = html.replace(/\\"/g, '"').replace(/\\\//g, "/");
   const sessionRe =
-    /"id":"(cmm[a-z0-9]+)"[\s\S]*?"room":"([^"]+)"[\s\S]*?"day":"([^"]+)"[\s\S]*?"slot":\{"key":"([^"]+)"[\s\S]*?"start":"(\d{2}:\d{2})"[\s\S]*?"endISO":"([^"]+)"/g;
+    /"id":"([a-z0-9]+)"[\s\S]*?"title":"([^"]+)"[\s\S]*?"room":"([^"]+)"[\s\S]*?"day":"([^"]+)"[\s\S]*?"slot":\{"key":"([^"]+)"[\s\S]*?"start":"(\d{2}:\d{2})"[\s\S]*?"endISO":"([^"]+)"/g;
 
   const slots = [];
   const seen = new Set();
@@ -63,11 +63,12 @@ function parseDayHtmlFromEmbeddedData(html, dayMeta, sessionIdByShort, exportedD
   let match;
   while ((match = sessionRe.exec(normalizedHtml)) !== null) {
     const fullId = match[1];
-    const room = he.decode(match[2]).trim();
-    const eventDayId = match[3];
-    const eventId = match[4];
-    const startTime = match[5];
-    const endTime = formatPseudoUtcTime(match[6]) || addMinutes(startTime, 50);
+    const embeddedTitle = he.decode(match[2]).trim();
+    const room = he.decode(match[3]).trim();
+    const eventDayId = match[4];
+    const eventId = match[5];
+    const startTime = match[6];
+    const endTime = formatPseudoUtcTime(match[7]) || addMinutes(startTime, 50);
 
     if (dayId && eventDayId !== dayId) {
       continue;
@@ -91,7 +92,7 @@ function parseDayHtmlFromEmbeddedData(html, dayMeta, sessionIdByShort, exportedD
       dayLabel: dayMeta.dayLabel,
       date: dayMeta.date,
       sessionId,
-      title: he.decode(session.title || "Session"),
+      title: he.decode(session.title || embeddedTitle || "Session"),
       room,
       trackTitle: he.decode(session.trackTitle || room),
       startTime,
